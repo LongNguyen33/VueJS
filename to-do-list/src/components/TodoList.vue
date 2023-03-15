@@ -8,8 +8,8 @@
             @keyup.enter="addTodo"
         />
         <button class="button" v-on:click="addTodo">ADD</button>
-        <div v-for="(todo, index) in todos" :key="todo.id" class="todo-item">
-            <div class="todo-item-left">
+        <todo-item v-for="(todo, index) in todos" :key="todo.id" :todo="todo" :index="index" @removeTodo="removeTodo">
+            <!-- <div class="todo-item-left">
                 <input v-model="todo.completed" type="checkbox" />
                 <div
                     v-if="!todo.editting"
@@ -44,14 +44,23 @@
                     <div class="trash-line-2"></div>
                     <div class="trash-line-3"></div>
                 </div>
+            </div> -->
+        </todo-item>
+        <div class="extra-container">
+                <div><label><input type="checkbox" :checked="!anyRemaining" @change="checkAlltodo"> Check All</label></div>
+                <div>{{ remaining }} items left</div>
             </div>
-        </div>
     </div>
 </template>
 <script>
 import checkString from '../utils/validate';
+import TodoItem from './TodoItem.vue';
+
 export default {
     name: 'todo-list',
+    components: {
+        TodoItem,
+    },
     data() {
         return {
             newTodo: '',
@@ -72,6 +81,14 @@ export default {
                 },
             ],
         };
+    },
+    computed: {
+        remaining() {
+            return this.todos.filter(todo => !todo.completed ).length
+        },
+        anyRemaining(){
+            return this.remaining != 0
+        }
     },
     directives: {
         focus: {
@@ -118,6 +135,9 @@ export default {
             todo.title = this.lastTitle;
             todo.editting = false;
         },
+        checkAlltodo(){
+            this.todos.forEach((todo) => todo.completed = event.target.checked )
+        }
     },
 };
 </script>
@@ -145,6 +165,15 @@ export default {
     padding: 10px;
     border: 1px solid #ccc;
     font-family: 'Avenir', Arial, Helvetica, sans-serif;
+}
+.extra-container{
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    font-size: 16px;
+    border-top:1px solid lightgrey ;
+    padding-top: 14px;
+    margin-bottom: 14px;
 }
 .icon-trash {
     width: 48px;
