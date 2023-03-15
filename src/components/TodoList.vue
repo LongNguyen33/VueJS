@@ -8,7 +8,14 @@
             @keyup.enter="addTodo"
         />
         <button class="button" v-on:click="addTodo">ADD</button>
-        <todo-item v-for="(todo, index) in todos" :key="todo.id" :todo="todo" :index="index" @removeTodo="removeTodo">
+        <todo-item
+            v-for="todo in todos"
+            :key="todo.id"
+            :todo="todo"
+            @removeTodo="removeTodo"
+            @finishEdit="finishEdit"
+            @checkAll="!anyRemaining"
+        >
             <!-- <div class="todo-item-left">
                 <input v-model="todo.completed" type="checkbox" />
                 <div
@@ -47,9 +54,18 @@
             </div> -->
         </todo-item>
         <div class="extra-container">
-                <div><label><input type="checkbox" :checked="!anyRemaining" @change="checkAlltodo"> Check All</label></div>
-                <div>{{ remaining }} items left</div>
+            <div>
+                <label
+                    ><input
+                        type="checkbox"
+                        :checked="!anyRemaining"
+                        @change="checkAlltodo"
+                    />
+                    Check All</label
+                >
             </div>
+            <div>{{ remaining }} items left</div>
+        </div>
     </div>
 </template>
 <script>
@@ -66,6 +82,7 @@ export default {
             newTodo: '',
             idForTodo: 3,
             lastTitle: '',
+            idlist:[],           
             todos: [
                 {
                     id: 1,
@@ -84,11 +101,11 @@ export default {
     },
     computed: {
         remaining() {
-            return this.todos.filter(todo => !todo.completed ).length
+            return this.todos.filter((todo) => !todo.completed).length;
         },
-        anyRemaining(){
-            return this.remaining != 0
-        }
+        anyRemaining() {
+            return this.remaining != 0;
+        },
     },
     directives: {
         focus: {
@@ -103,7 +120,17 @@ export default {
                 alert('Please input what needs to be done');
             } else if (checkString(this.newTodo) == false) {
                 alert('Must be string');
-            } else {
+            }
+            else if(this.idlist.length > 0 ){               
+                this.todos.push({
+                    id: this.idlist[this.idlist.length - 1 ],
+                    title: this.newTodo,
+                    completed: false,
+                    editting: false,
+                });
+                this.idlist.pop()
+            } 
+            else {
                 this.todos.push({
                     id: this.idForTodo,
                     title: this.newTodo,
@@ -114,9 +141,11 @@ export default {
                 this.idForTodo++;
             }
         },
-        removeTodo(index) {
-            this.todos.splice(index, 1);
-        },
+        removeTodo(id) {
+        const index = this.todos.findIndex((item) => item.id == id)
+        this.todos.splice(index, 1)
+        this.idlist.push(id)
+    },
         editTodo(todo) {
             if (todo.completed == true) {
                 todo.editting = false;
@@ -135,9 +164,16 @@ export default {
             todo.title = this.lastTitle;
             todo.editting = false;
         },
-        checkAlltodo(){
-            this.todos.forEach((todo) => todo.completed = event.target.checked )
-        }
+        checkAlltodo() {
+            this.todos.forEach(
+                (todo) => (todo.completed = event.target.checked),
+            );
+        },
+        finishedEdit(data) {
+            const index = this.todos.findIndex((item) => item.id == data.id)
+            this.todos.splice(index, 1, data.todo)
+    }
+        
     },
 };
 </script>
@@ -166,12 +202,12 @@ export default {
     border: 1px solid #ccc;
     font-family: 'Avenir', Arial, Helvetica, sans-serif;
 }
-.extra-container{
+.extra-container {
     display: flex;
     align-items: center;
     justify-content: space-around;
     font-size: 16px;
-    border-top:1px solid lightgrey ;
+    border-top: 1px solid lightgrey;
     padding-top: 14px;
     margin-bottom: 14px;
 }
