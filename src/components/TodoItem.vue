@@ -1,7 +1,7 @@
 <template>
     <div class="todo-item">
         <div class="todo-item-left">
-            <input v-model="completed" type="checkbox" @change="doneEdit"/>
+            <input v-model="completed" type="checkbox" @change="doneEdit" />
             <div
                 v-if="!editting"
                 @dblclick="editTodo()"
@@ -45,9 +45,9 @@ export default {
             required: true,
         },
         checkAll: {
-          type: Boolean,
-          required: true,
-        }
+            type: Boolean,
+            required: true,
+        },
     },
     data() {
         return {
@@ -76,12 +76,12 @@ export default {
             }
             this.editting = false;
             this.$emit('finishEdit', {
-              'id': this.id,
-              'title': this.title,
-              'completed': this.completed,
-              'editing': this.editing,
-              })
-            },
+                id: this.id,
+                title: this.title,
+                completed: this.completed,
+                editing: this.editing,
+            });
+        },
         cancelEdit() {
             this.title = this.lastTitle;
             this.editting = false;

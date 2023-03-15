@@ -82,7 +82,7 @@ export default {
             newTodo: '',
             idForTodo: 3,
             lastTitle: '',
-            idlist:[],           
+            idlist: [],
             todos: [
                 {
                     id: 1,
@@ -120,17 +120,15 @@ export default {
                 alert('Please input what needs to be done');
             } else if (checkString(this.newTodo) == false) {
                 alert('Must be string');
-            }
-            else if(this.idlist.length > 0 ){               
+            } else if (this.idlist.length > 0) {
                 this.todos.push({
-                    id: this.idlist[this.idlist.length - 1 ],
+                    id: this.idlist[this.idlist.length - 1],
                     title: this.newTodo,
                     completed: false,
                     editting: false,
                 });
-                this.idlist.pop()
-            } 
-            else {
+                this.idlist.pop();
+            } else {
                 this.todos.push({
                     id: this.idForTodo,
                     title: this.newTodo,
@@ -142,10 +140,10 @@ export default {
             }
         },
         removeTodo(id) {
-        const index = this.todos.findIndex((item) => item.id == id)
-        this.todos.splice(index, 1)
-        this.idlist.push(id)
-    },
+            const index = this.todos.findIndex((item) => item.id == id);
+            this.todos.splice(index, 1);
+            this.idlist.push(id);
+        },
         editTodo(todo) {
             if (todo.completed == true) {
                 todo.editting = false;
@@ -170,10 +168,9 @@ export default {
             );
         },
         finishedEdit(data) {
-            const index = this.todos.findIndex((item) => item.id == data.id)
-            this.todos.splice(index, 1, data.todo)
-    }
-        
+            const index = this.todos.findIndex((item) => item.id == data.id);
+            this.todos.splice(index, 1, data.todo);
+        },
     },
 };
 </script>
