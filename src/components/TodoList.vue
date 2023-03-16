@@ -13,34 +13,26 @@
             :key="todo.id"
             :todo="todo"
             :checkAll="!anyRemaining"
-            @removeTodo="removeTodo"
-            @finishEdit="finishEdit"
-            @editingTodo="editingTodo"
         >
         </todo-item>
         <div class="extra-container">
-            <div>
-                <label
-                    ><input
-                        type="checkbox"
-                        :checked="!anyRemaining"
-                        @change="checkAlltodo"
-                    />
-                    Check All</label
-                >
-            </div>
-            <div>{{ remaining }} items left</div>
+           <todo-check-all :anyRemaining="anyRemaining"> </todo-check-all>
+            <todo-items-remaining :remaining="remaining"></todo-items-remaining>
         </div>
     </div>
 </template>
 <script>
 import checkString from '../utils/validate';
 import TodoItem from './TodoItem.vue';
+import TodoItemsRemaining from './TodoItemsRemaining.vue';
+import TodoCheckAll from './TodoCheckAll.vue';
 
 export default {
     name: 'todo-list',
     components: {
         TodoItem,
+        TodoItemsRemaining,
+        TodoCheckAll,
     },
     data() {
         return {
@@ -63,6 +55,12 @@ export default {
                 },
             ],
         };
+    },
+    created(){
+        this.eventBus.$on('removeTodo', (id) => this.removeTodo(id))
+        this.eventBus.$on('finishEdit', (data) => this.finishEdit(data))
+        this.eventBus.$on('editingTodo', (data) => this.editingTodo(data))
+        this.eventBus.$on('checkAllChanged', (checked) => this.checkAlltodo(checked))
     },
     computed: {
         remaining() {

@@ -77,7 +77,7 @@ export default {
     },
     methods: {
         removeTodo(id) {
-            this.$emit('removeTodo', id);
+            this.eventBus.$emit('removeTodo', id);
         },
         editTodo() {
             if (this.completed == true) {
@@ -85,7 +85,7 @@ export default {
             } else {
                 this.lastTitle = this.title;
                 this.editing = true;
-                this.$emit('editingTodo', {
+                this.eventBus.$emit('editingTodo', {
                 id: this.id,
                 title: this.title,
                 completed: this.completed,
@@ -98,7 +98,7 @@ export default {
                 this.title = this.lastTitle;
             }
             this.editing = false;
-            this.$emit('finishEdit', {
+            this.eventBus.$emit('finishEdit', {
                 id: this.id,
                 title: this.title,
                 completed: this.completed,
