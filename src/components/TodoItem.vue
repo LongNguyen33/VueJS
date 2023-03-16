@@ -3,8 +3,8 @@
         <div class="todo-item-left">
             <input v-model="completed" type="checkbox" @change="doneEdit" />
             <div
-                v-if="!editting"
-                @dblclick="editTodo()"
+                v-if="!editing"
+                @dblclick="editTodo"
                 class="todo-item-label"
                 :class="{ completed: completed }"
             >
@@ -15,9 +15,9 @@
                 class="todo-item-edit"
                 type="text"
                 v-model="title"
-                @blur="doneEdit()"
-                @keyup.enter="doneEdit()"
-                @keyup.esc="cancelEdit()"
+                @blur="doneEdit"
+                @keyup.enter="doneEdit"
+                @keyup.esc="cancelEdit"
                 v-focus
             />
         </div>
@@ -49,14 +49,31 @@ export default {
             required: true,
         },
     },
+    watch: {
+        checkAll() {
+            if(this.checkAll) {
+                this.completed =true
+            }
+            else {
+                this.completed = this.todo.completed
+            }
+        }
+    },
     data() {
         return {
             id: this.todo.id,
             title: this.todo.title,
             completed: this.todo.completed,
-            editting: false,
+            editing: this.todo.editing,
             lastTitle: '',
         };
+    },
+    directives: {
+        focus: {
+            inserted: function (el) {
+                el.focus();
+            },
+        },
     },
     methods: {
         removeTodo(id) {
@@ -64,17 +81,23 @@ export default {
         },
         editTodo() {
             if (this.completed == true) {
-                this.editting = false;
+                this.editing = false;
             } else {
                 this.lastTitle = this.title;
-                this.editting = true;
+                this.editing = true;
+                this.$emit('editingTodo', {
+                id: this.id,
+                title: this.title,
+                completed: this.completed,
+                editing: this.editing,
+            });
             }
         },
         doneEdit() {
             if (this.title.trim().length == 0) {
                 this.title = this.lastTitle;
             }
-            this.editting = false;
+            this.editing = false;
             this.$emit('finishEdit', {
                 id: this.id,
                 title: this.title,
@@ -84,7 +107,7 @@ export default {
         },
         cancelEdit() {
             this.title = this.lastTitle;
-            this.editting = false;
+            this.editing = false;
         },
     },
 };

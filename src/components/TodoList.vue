@@ -12,46 +12,11 @@
             v-for="todo in todos"
             :key="todo.id"
             :todo="todo"
+            :checkAll="!anyRemaining"
             @removeTodo="removeTodo"
             @finishEdit="finishEdit"
-            @checkAll="!anyRemaining"
+            @editingTodo="editingTodo"
         >
-            <!-- <div class="todo-item-left">
-                <input v-model="todo.completed" type="checkbox" />
-                <div
-                    v-if="!todo.editting"
-                    @dblclick="editTodo(todo)"
-                    class="todo-item-label"
-                    :class="{ completed: todo.completed }"
-                >
-                    {{ todo.title }}
-                </div>
-                <input
-                    v-else
-                    class="todo-item-edit"
-                    type="text"
-                    v-model="todo.title"
-                    @blur="doneEdit(todo)"
-                    @keyup.enter="doneEdit(todo)"
-                    @keyup.esc="cancelEdit(todo)"
-                    v-focus
-                />
-            </div>
-            <div class="remove-item" @click="removeTodo(index)">
-                <div class="icon-trash" style="float: left">
-                    <div
-                        class="trash-lid"
-                        style="background-color: #2cc3b5"
-                    ></div>
-                    <div
-                        class="trash-container"
-                        style="background-color: #2cc3b5"
-                    ></div>
-                    <div class="trash-line-1"></div>
-                    <div class="trash-line-2"></div>
-                    <div class="trash-line-3"></div>
-                </div>
-            </div> -->
         </todo-item>
         <div class="extra-container">
             <div>
@@ -88,13 +53,13 @@ export default {
                     id: 1,
                     title: 'Playing Football',
                     completed: false,
-                    editting: false,
+                    editing: false,
                 },
                 {
                     id: 2,
                     title: 'Swimming',
                     completed: false,
-                    editting: false,
+                    editing: false,
                 },
             ],
         };
@@ -105,13 +70,6 @@ export default {
         },
         anyRemaining() {
             return this.remaining != 0;
-        },
-    },
-    directives: {
-        focus: {
-            inserted: function (el) {
-                el.focus();
-            },
         },
     },
     methods: {
@@ -125,15 +83,16 @@ export default {
                     id: this.idlist[this.idlist.length - 1],
                     title: this.newTodo,
                     completed: false,
-                    editting: false,
+                    editing: false,
                 });
+                this.newTodo = '';
                 this.idlist.pop();
             } else {
                 this.todos.push({
                     id: this.idForTodo,
                     title: this.newTodo,
                     completed: false,
-                    editting: false,
+                    editing: false,
                 });
                 this.newTodo = '';
                 this.idForTodo++;
@@ -144,33 +103,19 @@ export default {
             this.todos.splice(index, 1);
             this.idlist.push(id);
         },
-        editTodo(todo) {
-            if (todo.completed == true) {
-                todo.editting = false;
-            } else {
-                this.lastTitle = todo.title;
-                todo.editting = true;
-            }
-        },
-        doneEdit(todo) {
-            todo.editting = false;
-            if (todo.title.trim().length == 0) {
-                todo.title = this.lastTitle;
-            }
-        },
-        cancelEdit(todo) {
-            todo.title = this.lastTitle;
-            todo.editting = false;
-        },
         checkAlltodo() {
             this.todos.forEach(
                 (todo) => (todo.completed = event.target.checked),
             );
         },
-        finishedEdit(data) {
+        finishEdit(data) {
             const index = this.todos.findIndex((item) => item.id == data.id);
-            this.todos.splice(index, 1, data.todo);
+            this.todos.splice(index, 1, data);
         },
+        editingTodo(data) {
+            const index = this.todos.findIndex((item) => item.id == data.id);
+            this.todos.splice(index, 1, data);
+        }
     },
 };
 </script>
@@ -202,12 +147,12 @@ export default {
 .extra-container {
     display: flex;
     align-items: center;
-    justify-content: space-around;
+    justify-content: space-between;
     font-size: 16px;
     border-top: 1px solid lightgrey;
     padding-top: 14px;
     margin-bottom: 14px;
-}
+  }
 .icon-trash {
     width: 48px;
     height: 48px;
